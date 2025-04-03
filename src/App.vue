@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen w-full">
-    <div id="map"></div>
+    <div id="map" class="h-full w-full"></div>
     <div class="absolute top-4 left-4 z-50 bg-white p-4 shadow-xl rounded max-w-sm">
       <label for="speed">Vitesse moyenne (km/h):</label>
       <input
