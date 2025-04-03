@@ -8,7 +8,7 @@ Cette application interactive utilise **Vue 3**, **Leaflet.js**, **OSRM** et **O
 - Calculer l’itinéraire pédestre via OSRM
 - Estimer la distance et l’heure d’arrivée en fonction d’une vitesse moyenne saisie
 - Afficher la météo à intervalles réguliers sur l’itinéraire avec Open-Meteo
-- Afficher la météo actuelle à la position GPS de l’utilisateur
+- Afficher la météo actuelle à la position GPS de l'utilisateur
 
 ---
 
