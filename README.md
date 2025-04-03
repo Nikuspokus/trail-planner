@@ -1,34 +1,42 @@
-# trail-planneur-2
+🗺️ Vue 3 - Application de planification de trajet pédestre
 
-This template should help get you started developing with Vue 3 in Vite.
+Cette application interactive utilise **Vue 3**, **Leaflet.js**, **OSRM** et **Open-Meteo** pour :
 
-## Recommended IDE Setup
+- Afficher une carte interactive
+- Définir un point de départ fixe (Paris)
+- Sélectionner un point d’arrivée par clic sur la carte
+- Calculer l’itinéraire pédestre via OSRM
+- Estimer la distance et l’heure d’arrivée en fonction d’une vitesse moyenne saisie
+- Afficher la météo à intervalles réguliers sur l’itinéraire avec Open-Meteo
+- Afficher la météo actuelle à la position GPS de l’utilisateur
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Type Support for `.vue` Imports in TS
+## 🧱 Technologies utilisées
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- **Vue 3 + `<script setup>`**
+- **TypeScript**
+- **Leaflet.js** – carte interactive
+- **OSRM API** – calcul d'itinéraire
+- **Open-Meteo API** – météo actuelle et future
+- **Axios** – appels HTTP
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## 🚀 Lancer le projet en local
 
-## Project Setup
+### Prérequis
 
-```sh
+- [Node.js](https://nodejs.org/) >= 18.x
+- [npm](https://www.npmjs.com/) ou [pnpm](https://pnpm.io)
+
+### Installation
+
+```bash
+# Clone du projet
+git clone https://github.com/ton-user/ton-projet.git
+cd ton-projet
+
+# Installation des dépendances
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-# trail-planner-2
