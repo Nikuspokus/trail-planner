@@ -32,7 +32,6 @@ Cette application interactive utilise **Vue 3**, **Leaflet.js**, **OSRM** et **O
 
 ### Installation
 
-```bash
 # Clone du projet
 git clone https://github.com/Nikuspokus/trail-planner-2.git
 cd trail-planner-2
