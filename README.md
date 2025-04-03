@@ -1,6 +1,6 @@
 🗺️ Vue 3 - Application de planification de trajet pédestre
 
-Cette application interactive utilise **Vue 3**, **Leaflet.js**, **OSRM** et **Open-Meteo** pour :
+Cette application interactive utilise **Vue 3**  ![Vue 3](https://img.shields.io/badge/Vue-3.x-brightgreen), **Leaflet.js** ![Leaflet](https://img.shields.io/badge/Leaflet-1.9-green), **OSRM** et **Open-Meteo** pour :
 
 - Afficher une carte interactive
 - Définir un point de départ fixe (Paris)
