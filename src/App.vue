@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen w-full">
-    <div id="map" class="h-full w-full"></div>
+    <div id="map"></div>
     <div class="absolute top-4 left-4 z-50 bg-white p-4 shadow-xl rounded max-w-sm">
       <label for="speed">Vitesse moyenne (km/h):</label>
       <input
@@ -238,15 +238,39 @@ body {
 
 #map {
   height: 40em;
-  width: 80em;
+  max-width: 80em;
+  min-width: 20em;
+  margin: 1em;
   border: 2px solid #ccc;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Tablettes et petits laptops */
+@media (max-width: 768px) {
+  #map {
+    height: 60vh;
+    max-width: 47em;
+    min-width: 29em;
+    border-radius: 10px;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 480px) {
+  #map {
+    height: 50vh;
+    min-width: 5em;
+    max-width: 28em;
+    border-radius: 8px;
+  }
 }
 
 ul {
   margin-top: 1rem;
   padding-left: 1rem;
+  padding-right: 1rem;
   border-top: 1px solid #eee;
   max-height: 150px;
   overflow-y: auto;
