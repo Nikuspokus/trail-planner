@@ -68,11 +68,8 @@ async function calculateRoute(destCoords: [number, number]) {
     const response = await axios.get(url)
     if (!response.data.routes || response.data.routes.length === 0)
       throw new Error('Aucune route trouvée par OSRM.')
-    if (data && data.routes && data.routes.length > 0) {
-      const geometry = response.data.routes[0].geometry.coordinates
-    } else {
-      console.error('Réponse OSRM invalide ou vide :', data)
-    }
+
+    const geometry = response.data.routes[0].geometry.coordinates
     const distance = response.data.routes[0].distance / 1000
     const durationHours = distance / speed.value
     const now = new Date()
