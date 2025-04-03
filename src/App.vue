@@ -1,15 +1,37 @@
 <template>
   <div class="h-screen w-full">
     <div id="map" class="h-full w-full"></div>
-    <div class="absolute top-4 left-4 z-50 bg-white p-4 shadow-xl rounded">
+    <div class="absolute top-4 left-4 z-50 bg-white p-4 shadow-xl rounded max-w-sm">
       <label for="speed">Vitesse moyenne (km/h):</label>
       <input
         v-model.number="speed"
         type="number"
         id="speed"
         min="1"
-        class="border ml-2 px-2 py-1 rounded"
+        class="border ml-2 px-2 py-1 rounded w-full"
       />
+
+      <p v-if="distanceKm !== null && arrivalTime !== null" class="mt-4 text-sm">
+        🚶 Distance : {{ distanceKm.toFixed(2) }} km — 🕒 Heure d'arrivée estimée :
+        {{ arrivalTime }}
+      </p>
+
+      <p v-if="currentWeather" class="mt-2 text-sm text-gray-700">
+        🌡️ Météo actuelle à votre position : {{ currentWeather }}
+      </p>
+
+      <ul class="mt-2 text-xs text-gray-600 max-h-40 overflow-y-auto">
+        <li v-for="(entry, index) in weatherHistory" :key="index">
+          🕒 {{ entry.time }} — 🌡️ {{ entry.temperature }}
+        </li>
+      </ul>
+
+      <button
+        @click="resetMap"
+        class="mt-4 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+      >
+        Réinitialiser
+      </button>
     </div>
   </div>
 </template>
@@ -20,10 +42,23 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
 
-const speed = ref(5) // km/h
+const speed = ref(6)
 const startCoords: [number, number] = [48.858093, 2.294694] // Paris
+const distanceKm = ref<number | null>(null)
+const arrivalTime = ref<string | null>(null)
+const userCoords = ref<[number, number] | null>(null)
+const userMarker = ref<L.Marker | null>(null)
 let map: L.Map
 let routeLayer: L.Polyline | null = null
+let destinationMarker: L.Marker | null = null
+
+const currentWeather = ref<string | null>(null)
+
+type WeatherEntry = {
+  time: string
+  temperature: string
+}
+const weatherHistory = ref<WeatherEntry[]>([])
 
 async function calculateRoute(destCoords: [number, number]) {
   try {
@@ -31,11 +66,8 @@ async function calculateRoute(destCoords: [number, number]) {
     const url = `https://router.project-osrm.org/route/v1/foot/${coords}?overview=full&geometries=geojson`
 
     const response = await axios.get(url)
-    console.log('Réponse OSRM brute :', response.data)
-
-    if (!response.data.routes || response.data.routes.length === 0) {
+    if (!response.data.routes || response.data.routes.length === 0)
       throw new Error('Aucune route trouvée par OSRM.')
-    }
 
     const geometry = response.data.routes[0].geometry.coordinates
     const distance = response.data.routes[0].distance / 1000
@@ -58,7 +90,6 @@ async function calculateRoute(destCoords: [number, number]) {
     }
 
     const results = await Promise.allSettled(weatherPromises)
-
     const weatherData = results.map((res, i) => {
       if (res.status === 'fulfilled') return res.value
       console.warn(`Erreur météo à l'étape ${i} :`, res.reason)
@@ -73,17 +104,15 @@ async function calculateRoute(destCoords: [number, number]) {
         .bindPopup(`${weather.temperature}°C à ${new Date(weather.time).toLocaleTimeString()}`)
     })
 
-    alert(
-      `Distance : ${distance.toFixed(2)} km\\nHeure d'arrivée estimée : ${arrival.toLocaleTimeString()}`,
-    )
+    distanceKm.value = distance
+    arrivalTime.value = arrival.toLocaleTimeString()
   } catch (error: any) {
     console.error('Erreur OSRM :', error.message || error)
-    alert('Échec du calcul de l’itinéraire avec OSRM.')
   }
 }
 
 async function fetchWeather(lat: number, lon: number, time: string) {
-  const response = await axios.get(`https://api.open-meteo.com/v1/forecast`, {
+  const response = await axios.get('https://api.open-meteo.com/v1/forecast', {
     params: {
       latitude: lat,
       longitude: lon,
@@ -93,14 +122,49 @@ async function fetchWeather(lat: number, lon: number, time: string) {
       timezone: 'auto',
     },
   })
-  const hourIndex = 0
   return {
-    temperature: response.data.hourly.temperature_2m[hourIndex],
+    temperature: response.data.hourly.temperature_2m[0],
     time,
   }
 }
 
-let destinationMarker: L.Marker | null = null
+function resetMap() {
+  if (routeLayer) {
+    map.removeLayer(routeLayer)
+    routeLayer = null
+  }
+  if (destinationMarker) {
+    map.removeLayer(destinationMarker)
+    destinationMarker = null
+  }
+  distanceKm.value = null
+  arrivalTime.value = null
+}
+
+async function updateCurrentWeather(lat: number, lon: number) {
+  try {
+    const now = new Date().toISOString()
+    const response = await axios.get('https://api.open-meteo.com/v1/forecast', {
+      params: {
+        latitude: lat,
+        longitude: lon,
+        hourly: 'temperature_2m',
+        start: now,
+        end: now,
+        timezone: 'auto',
+      },
+    })
+    const temp = `${response.data.hourly.temperature_2m[0]}°C`
+    currentWeather.value = temp
+    weatherHistory.value.unshift({
+      time: new Date().toLocaleTimeString(),
+      temperature: temp,
+    })
+    if (weatherHistory.value.length > 20) weatherHistory.value.pop()
+  } catch (error) {
+    console.error('Erreur météo en direct :', error)
+  }
+}
 
 onMounted(() => {
   map = L.map('map').setView(startCoords, 13)
@@ -113,23 +177,83 @@ onMounted(() => {
 
   map.on('click', (e: L.LeafletMouseEvent) => {
     const destCoords: [number, number] = [e.latlng.lat, e.latlng.lng]
-
-    // Affiche ou met à jour le marqueur d’arrivée
     if (destinationMarker) {
       destinationMarker.setLatLng(e.latlng)
     } else {
       destinationMarker = L.marker(e.latlng).addTo(map).bindPopup('Arrivée')
     }
     destinationMarker.openPopup()
-
     calculateRoute(destCoords)
   })
+
+  trackUserPosition()
+
+  setInterval(
+    () => {
+      if (userCoords.value) {
+        updateCurrentWeather(userCoords.value[0], userCoords.value[1])
+      }
+    },
+    30 * 60 * 1000,
+  )
 })
+
+function trackUserPosition() {
+  if (!navigator.geolocation) {
+    alert('La géolocalisation n’est pas disponible.')
+    return
+  }
+
+  navigator.geolocation.watchPosition(
+    (position) => {
+      const lat = position.coords.latitude
+      const lng = position.coords.longitude
+      userCoords.value = [lat, lng]
+
+      if (userMarker.value) {
+        userMarker.value.setLatLng([lat, lng])
+      } else {
+        userMarker.value = L.marker([lat, lng], {
+          icon: L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png' }),
+        })
+          .addTo(map)
+          .bindPopup('📍 Vous êtes ici')
+      }
+
+      updateCurrentWeather(lat, lng)
+    },
+    (error) => {
+      console.error('Erreur de géolocalisation :', error)
+    },
+    { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 },
+  )
+}
 </script>
 
 <style>
+body {
+  background-color: #fff;
+  color: black;
+}
+
 #map {
-  height: 60em;
-  width: 90em;
+  height: 40em;
+  width: 80em;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  margin-top: 1rem;
+  padding-left: 1rem;
+  border-top: 1px solid #eee;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+li {
+  padding: 0.25rem 0;
+  border-bottom: 1px dashed #ddd;
 }
 </style>
