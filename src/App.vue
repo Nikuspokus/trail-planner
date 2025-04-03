@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen w-full">
-    <div id="map"></div>
+    <div id="map" class="h-full w-full"></div>
     <div class="absolute top-4 left-4 z-50 bg-white p-4 shadow-xl rounded max-w-sm">
       <label for="speed">Vitesse moyenne (km/h):</label>
       <input
@@ -68,11 +68,8 @@ async function calculateRoute(destCoords: [number, number]) {
     const response = await axios.get(url)
     if (!response.data.routes || response.data.routes.length === 0)
       throw new Error('Aucune route trouvée par OSRM.')
-    if (data && data.routes && data.routes.length > 0) {
-      const geometry = response.data.routes[0].geometry.coordinates
-    } else {
-      console.error('Réponse OSRM invalide ou vide :', data)
-    }
+
+    const geometry = response.data.routes[0].geometry.coordinates
     const distance = response.data.routes[0].distance / 1000
     const durationHours = distance / speed.value
     const now = new Date()
