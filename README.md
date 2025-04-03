@@ -12,6 +12,12 @@ Cette application interactive utilise **Vue 3**  ![Vue 3](https://img.shields.io
 
 ---
 
+## 🔗 Démo en ligne
+
+👉 [Accéder à l'application](https://trail-planner.netlify.app/)
+
+---
+
 ## 🧱 Technologies utilisées
 
 - **Vue 3 + `<script setup>`**
