@@ -46,15 +46,23 @@ npm run dev
 -🌍 Carte interactive centrée sur Paris
 
 -📍 Sélection du point d’arrivée par clic
+
 -🧮 Calcul de distance / temps estimé
+
 -🏃‍♂️ Entrée de la vitesse de marche personnalisée
+
 -🌡️ Météo en temps réel + météo toutes les 30 minutes sur le parcours
+
 -📍 Suivi de position utilisateur via l'API navigateur
 
 ## 💡 Améliorations possibles
+
 -🗺️ Affichage du profil d’altitude (via API Elevation)
+
 -🗓️ Ajout d’un sélecteur de date pour prévoir un itinéraire futur
+
 -📦 Export PDF ou impression de l’itinéraire
+
 -🧭 Mode mobile responsive amélioré
 
 ## 🔐 APIs utilisées
