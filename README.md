@@ -34,8 +34,8 @@ Cette application interactive utilise **Vue 3**, **Leaflet.js**, **OSRM** et **O
 
 ```bash
 # Clone du projet
-git clone https://github.com/ton-user/ton-projet.git
-cd ton-projet
+git clone https://github.com/Nikuspokus/trail-planner-2.git
+cd trail-planner-2
 
 # Installation des dépendances
 npm install
