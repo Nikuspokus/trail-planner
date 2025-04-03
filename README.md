@@ -44,6 +44,7 @@ npm run dev
 
 ## 📸 Fonctionnalités
 -🌍 Carte interactive centrée sur Paris
+
 -📍 Sélection du point d’arrivée par clic
 -🧮 Calcul de distance / temps estimé
 -🏃‍♂️ Entrée de la vitesse de marche personnalisée
